@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "646967382958",
+    "project_id": "fir-authdemo-a630d",
+    "storage_bucket": "fir-authdemo-a630d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646967382958:android:531229ab08a1cb0d4e2e3f",
+        "android_client_info": {
+          "package_name": "com.dilip.firebaseauthdemo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvgr3U7tgN2luv9XDiVxov3b68PJ8kgvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
