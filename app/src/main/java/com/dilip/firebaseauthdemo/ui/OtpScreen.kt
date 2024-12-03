@@ -35,9 +35,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dilip.firebaseauthdemo.R
 import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
 import com.dilip.firebaseauthdemo.features.utils.CommonDialog
@@ -50,7 +53,7 @@ fun OtpScreen(
     otp: String,
     phoneNumber: String,
     navController: NavController,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var otpInput by remember { mutableStateOf("") }

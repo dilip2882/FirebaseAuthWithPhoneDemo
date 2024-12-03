@@ -35,10 +35,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dilip.firebaseauthdemo.R
 import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
 import com.dilip.firebaseauthdemo.features.utils.CommonDialog
@@ -47,12 +50,10 @@ import com.dilip.firebaseauthdemo.navigation.Route
 import com.hbb20.CountryCodePicker
 import kotlinx.coroutines.launch
 
-private const val TAG = "MainScreen"
-
 @Composable
 fun NumberScreen(
     navController: NavController,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var phoneNumber by remember { mutableStateOf("") }
