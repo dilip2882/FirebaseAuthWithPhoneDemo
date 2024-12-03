@@ -19,16 +19,12 @@ fun MainNavigation(modifier: Modifier = Modifier) {
     ) {
         composable<Route.HomeScreen> {
             NumberScreen(
-                navController = navController,
             )
         }
 
         composable<Route.OtpScreen> {
             OtpScreen(
-                navController = navController,
-                onVerificationSuccess = {
-                    navController.navigate(Route.MainScreen)
-                }
+
             )
         }
 

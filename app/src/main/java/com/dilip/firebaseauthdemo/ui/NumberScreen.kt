@@ -37,7 +37,6 @@ private const val TAG = "MainScreen"
 
 @Composable
 fun NumberScreen(
-    navController: NavController,
 ) {
     val context = LocalContext.current
     var phoneNumber by remember { mutableStateOf("") }
@@ -92,16 +91,8 @@ fun NumberScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
-            modifier = Modifier.clickable {
-                navController.navigate(Route.OtpScreen)
-            },
             onClick = {
-                onLoginClick(
-                    context = context,
-                    phoneNumber = phoneNumber,
-                    onCodeSend = {},
-                    navController = navController
-                )
+
             },
             colors = ButtonDefaults.buttonColors(
                 if (phoneNumber.length >= 10) tcolor else Color.Gray

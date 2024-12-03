@@ -39,8 +39,6 @@ import androidx.navigation.NavController as NavController1
 
 @Composable
 fun OtpScreen(
-    onVerificationSuccess: () -> Unit,
-    navController: NavController1
 ) {
     val context = LocalContext.current
     var otp by remember { mutableStateOf("") }
@@ -107,9 +105,7 @@ fun OtpScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
-            modifier = Modifier.clickable { onVerificationSuccess() },
             onClick = {
-                verifyPhoneNumberWithCode(context, storedVerificationId, otp, navController)
             },
             colors = ButtonDefaults.buttonColors(
                 if (otp.length >= 6) tcolor else Color.Gray

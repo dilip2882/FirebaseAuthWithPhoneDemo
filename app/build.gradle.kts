@@ -73,4 +73,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.hilt.compiler)
 
+    // country code picker
+    implementation("com.github.joielechong:countrycodepicker:2.4.2")
+
 }
