@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.dilip.firebaseauthdemo.features.screens.PhoneAuthScreen
 import com.dilip.firebaseauthdemo.navigation.MainNavigation
+import com.dilip.firebaseauthdemo.ui.NumberScreen
 import com.dilip.firebaseauthdemo.ui.theme.FirebaseAuthDemoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +22,8 @@ class MainActivity : ComponentActivity() {
             FirebaseAuthDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
 //                    MainNavigation()
-                    PhoneAuthScreen(activity = this)
+//                    PhoneAuthScreen(activity = this)
+                    NumberScreen()
 
                 }
             }
