@@ -1,10 +1,9 @@
 package com.dilip.firebaseauthdemo.ui
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,22 +31,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.dilip.firebaseauthdemo.R
 import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
 import com.dilip.firebaseauthdemo.features.utils.CommonDialog
 import com.dilip.firebaseauthdemo.features.utils.ResultState
 import com.dilip.firebaseauthdemo.navigation.Route
 import com.hbb20.CountryCodePicker
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 private const val TAG = "MainScreen"
 
@@ -70,26 +69,47 @@ fun NumberScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(bgColor),
+            .background(bgColor)
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.mail_box_img),
+            contentDescription = null,
+            modifier = Modifier.size(150.dp)
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
         Text(
             text = "OTP Verification",
-            fontSize = 30.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
+            color = tcolor
         )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(text = "We will send you OTP", color = tcolor)
-        Text(text = "on your phone number", color = tcolor)
 
         Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = "We will send you a One Time Password",
+            color = Color.Gray,
+            fontSize = 16.sp
+        )
+        Text(
+            text = "on this mobile number",
+            color = Color.Gray,
+            fontSize = 16.sp
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Country Code Picker
@@ -102,18 +122,20 @@ fun NumberScreen(
                         }
                     }
                 },
-                modifier = Modifier.wrapContentSize()
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(56.dp)
+                    .padding(top = 10.dp)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Phone number input field
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = {
                     if (it.length <= 10) phoneNumber = it
                 },
-                label = { Text(text = "Enter Phone Number", color = tcolor) },
+                label = { Text(text = "Enter Mobile Number", color = tcolor) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = bgColor,
                     unfocusedContainerColor = bgColor,
@@ -122,7 +144,7 @@ fun NumberScreen(
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(0.dp),
+                    .height(56.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
@@ -133,9 +155,10 @@ fun NumberScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Button(
+            shape = RoundedCornerShape(50),
             onClick = {
                 val fullNumber = "$countryCode$phoneNumber" // country code with phone number
                 isDialog = true
@@ -146,13 +169,20 @@ fun NumberScreen(
                             is ResultState.Success -> {
                                 isDialog = false
                                 val otp = it.data
-                                navController.navigate(Route.OtpScreen.withOtp(otp))
+                                navController.navigate(
+                                    Route.OtpScreen.withOtpAndPhone(
+                                        otp,
+                                        fullNumber
+                                    )
+                                )
                             }
+
                             is ResultState.Failure -> {
                                 isDialog = false
-                                Toast.makeText(context, it.msg.toString(), Toast.LENGTH_SHORT).show()
-                                Log.d(TAG, "NumberScreen: ${it.msg}")
+                                Toast.makeText(context, "Failed to send OTP", Toast.LENGTH_SHORT)
+                                    .show()
                             }
+
                             ResultState.Loading -> {
                                 isDialog = true
                             }
@@ -163,7 +193,7 @@ fun NumberScreen(
             colors = ButtonDefaults.buttonColors(
                 if (phoneNumber.length == 10) tcolor else Color.Gray
             ),
-            enabled = phoneNumber.length == 10
+            enabled = phoneNumber.length == 10,
         ) {
             Text(text = "Generate OTP", color = Color.White)
         }

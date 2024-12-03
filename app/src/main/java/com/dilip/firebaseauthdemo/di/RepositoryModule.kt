@@ -1,4 +1,4 @@
-package com.programminSimplified.firebaseproject.di
+package com.dilip.firebaseauthdemo.di
 
 import com.dilip.firebaseauthdemo.features.repository.AuthRepository
 import com.dilip.firebaseauthdemo.features.repository.AuthRepositoryImpl

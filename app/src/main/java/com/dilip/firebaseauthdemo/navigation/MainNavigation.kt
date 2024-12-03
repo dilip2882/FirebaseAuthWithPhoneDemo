@@ -1,8 +1,6 @@
 package com.dilip.firebaseauthdemo.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -10,8 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
+import com.dilip.firebaseauthdemo.ui.HomeScreen
 import com.dilip.firebaseauthdemo.ui.NumberScreen
-import com.dilip.firebaseauthdemo.ui.MainScreen
 import com.dilip.firebaseauthdemo.ui.OtpScreen
 
 @Composable
@@ -25,11 +23,18 @@ fun MainNavigation(
             NumberScreen(navController, viewModel)
         }
         composable(
-            route = Route.OtpScreen.route + "/{${Route.OtpScreen.OTP_ARG}}",
-            arguments = listOf(navArgument(Route.OtpScreen.OTP_ARG) { type = NavType.StringType })
+            route = Route.OtpScreen.route + "/{${Route.OtpScreen.OTP_ARG}}/{${Route.OtpScreen.PHONE_ARG}}",
+            arguments = listOf(
+                navArgument(Route.OtpScreen.OTP_ARG) { type = NavType.StringType },
+                navArgument(Route.OtpScreen.PHONE_ARG) { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val otp = backStackEntry.arguments?.getString(Route.OtpScreen.OTP_ARG) ?: ""
-            OtpScreen(otp, viewModel)
+            val phoneNumber = backStackEntry.arguments?.getString(Route.OtpScreen.PHONE_ARG) ?: ""
+            OtpScreen(otp, phoneNumber, navController, viewModel)
+        }
+        composable(Route.HomeScreen.route) {
+            HomeScreen()
         }
     }
 }

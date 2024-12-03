@@ -32,7 +32,6 @@ fun CommonDialog() {
 
 }
 
-
 @Composable
 fun OtpView(
     modifier: Modifier = Modifier,
