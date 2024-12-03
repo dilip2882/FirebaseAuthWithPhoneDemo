@@ -21,9 +21,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             FirebaseAuthDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
-//                    MainNavigation()
+                    MainNavigation()
 //                    PhoneAuthScreen(activity = this)
-                    NumberScreen()
+//                    NumberScreen()
 
                 }
             }

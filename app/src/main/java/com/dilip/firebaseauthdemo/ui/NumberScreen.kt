@@ -1,5 +1,6 @@
 package com.dilip.firebaseauthdemo.ui
 
+import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,18 +39,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
+import com.dilip.firebaseauthdemo.features.utils.CommonDialog
+import com.dilip.firebaseauthdemo.features.utils.ResultState
 import com.dilip.firebaseauthdemo.navigation.Route
 import com.hbb20.CountryCodePicker
+import kotlinx.coroutines.launch
+import kotlin.math.log
 
 private const val TAG = "MainScreen"
 
 @Composable
-fun NumberScreen() {
+fun NumberScreen(
+    navController: NavController,
+    viewModel: AuthViewModel
+) {
     val context = LocalContext.current
     var phoneNumber by remember { mutableStateOf("") }
-    var countryCode by remember { mutableStateOf("+91") } // Default country code
-    val bgColor = Color(0xFFECFADC)
+    var countryCode by remember { mutableStateOf("+91") }
+    val bgColor = Color(0xFFFFFFFF)
     val tcolor = Color(0xFF2b472b)
+    var isDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    if (isDialog) {
+        CommonDialog()
+    }
 
     Column(
         modifier = Modifier
@@ -75,10 +92,11 @@ fun NumberScreen() {
                 .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Country Code Picker
             AndroidView(
                 factory = { context ->
                     CountryCodePicker(context).apply {
-                        setDefaultCountryUsingPhoneCode(91)
+                        setDefaultCountryUsingPhoneCode(91) // Default
                         setOnCountryChangeListener {
                             countryCode = selectedCountryCodeWithPlus
                         }
@@ -89,14 +107,13 @@ fun NumberScreen() {
 
             Spacer(modifier = Modifier.width(8.dp))
 
+            // Phone number input field
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = {
                     if (it.length <= 10) phoneNumber = it
                 },
-                label = {
-                    Text(text = "Enter Phone Number", color = tcolor)
-                },
+                label = { Text(text = "Enter Phone Number", color = tcolor) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = bgColor,
                     unfocusedContainerColor = bgColor,
@@ -120,8 +137,28 @@ fun NumberScreen() {
 
         Button(
             onClick = {
-                val fullNumber = "$countryCode$phoneNumber"
-                Toast.makeText(context, "Sending OTP to $fullNumber", Toast.LENGTH_SHORT).show()
+                val fullNumber = "$countryCode$phoneNumber" // country code with phone number
+                isDialog = true
+
+                scope.launch {
+                    viewModel.createUserWithPhone(fullNumber, context as Activity).collect {
+                        when (it) {
+                            is ResultState.Success -> {
+                                isDialog = false
+                                val otp = it.data
+                                navController.navigate(Route.OtpScreen.withOtp(otp))
+                            }
+                            is ResultState.Failure -> {
+                                isDialog = false
+                                Toast.makeText(context, it.msg.toString(), Toast.LENGTH_SHORT).show()
+                                Log.d(TAG, "NumberScreen: ${it.msg}")
+                            }
+                            ResultState.Loading -> {
+                                isDialog = true
+                            }
+                        }
+                    }
+                }
             },
             colors = ButtonDefaults.buttonColors(
                 if (phoneNumber.length == 10) tcolor else Color.Gray
@@ -131,11 +168,4 @@ fun NumberScreen() {
             Text(text = "Generate OTP", color = Color.White)
         }
     }
-}
-
-
-@Preview
-@Composable
-private fun NumberScreenPreview() {
-    NumberScreen()
 }

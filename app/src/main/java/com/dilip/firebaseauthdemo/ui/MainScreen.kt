@@ -33,7 +33,7 @@ fun signInWithPhoneAuthCredential(context: Context, credential: PhoneAuthCredent
         .addOnCompleteListener(context as Activity) { task ->
             if (task.isSuccessful) {
                 Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                navController.navigate(route = Route.MainScreen)
+//                navController.navigate(route = Route.MainScreen)
             } else {
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
                     Toast.makeText(context, "Wrong Credentials", Toast.LENGTH_SHORT).show()

@@ -12,12 +12,11 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun createUserWithPhone(
-        mobile:String,
-        activity:Activity
-    ) = repo.createUserWithPhone(mobile,activity)
+        mobile: String,
+        activity: Activity
+    ) = repo.createUserWithPhone(mobile, activity)
 
     fun signInWithCredential(
-        code:String
+        code: String
     ) = repo.signWithCredential(code)
-
 }

@@ -14,18 +14,16 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val authdb:FirebaseAuth
+    private val authdb: FirebaseAuth
 ) : AuthRepository {
 
     private lateinit var omVerificationCode: String
 
-    override fun createUserWithPhone(phone: String,activity:Activity): Flow<ResultState<String>> =  callbackFlow{
+    override fun createUserWithPhone(phone: String, activity: Activity): Flow<ResultState<String>> = callbackFlow {
         trySend(ResultState.Loading)
 
-        val onVerificationCallback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
-            override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-
-            }
+        val onVerificationCallback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(p0: PhoneAuthCredential) {}
 
             override fun onVerificationFailed(p0: FirebaseException) {
                 trySend(ResultState.Failure(p0))
@@ -36,17 +34,17 @@ class AuthRepositoryImpl @Inject constructor(
                 trySend(ResultState.Success("OTP Sent Successfully"))
                 omVerificationCode = verificationCode
             }
-
         }
 
         val options = PhoneAuthOptions.newBuilder(authdb)
-            .setPhoneNumber("+91$phone")
-            .setTimeout(60L,TimeUnit.SECONDS)
+            .setPhoneNumber(phone) // Phone number with country code like +91xxxxxxxxxx
+            .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(onVerificationCallback)
             .build()
+
         PhoneAuthProvider.verifyPhoneNumber(options)
-        awaitClose{
+        awaitClose {
             close()
         }
     }
@@ -56,7 +54,7 @@ class AuthRepositoryImpl @Inject constructor(
 
         val code = omVerificationCode
 
-        if (code == null) {
+        if (code.isNullOrEmpty()) {
             trySend(ResultState.Failure(IllegalStateException("Verification code not initialized")))
         } else {
             val credential = PhoneAuthProvider.getCredential(code, otp)
