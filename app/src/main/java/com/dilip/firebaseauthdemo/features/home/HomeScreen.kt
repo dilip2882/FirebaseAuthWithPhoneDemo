@@ -1,4 +1,4 @@
-package com.dilip.firebaseauthdemo.ui
+package com.dilip.firebaseauthdemo.features.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -53,7 +53,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.firebase.auth)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -62,6 +61,19 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.google.firebase.auth.ktx)
+
+    // DataStore
+//    implementation(libs.androidx.datastore.preferences.core)
+    implementation(libs.gson)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
 
     // navigation
     implementation(libs.navigation.compose)
@@ -75,7 +87,4 @@ dependencies {
 
     // country code picker
     implementation("com.hbb20:ccp:2.7.3")
-
-
-
 }

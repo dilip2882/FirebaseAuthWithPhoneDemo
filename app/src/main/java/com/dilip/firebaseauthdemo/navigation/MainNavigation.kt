@@ -7,10 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
-import com.dilip.firebaseauthdemo.ui.HomeScreen
-import com.dilip.firebaseauthdemo.ui.NumberScreen
-import com.dilip.firebaseauthdemo.ui.OtpScreen
+import com.dilip.firebaseauthdemo.features.auth.AuthViewModel
+import com.dilip.firebaseauthdemo.features.home.HomeScreen
+import com.dilip.firebaseauthdemo.features.auth.NumberScreen
+import com.dilip.firebaseauthdemo.features.auth.OtpScreen
 
 @Composable
 fun MainNavigation(

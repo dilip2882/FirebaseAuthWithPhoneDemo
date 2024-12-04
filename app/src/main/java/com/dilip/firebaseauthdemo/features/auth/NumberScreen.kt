@@ -1,4 +1,4 @@
-package com.dilip.firebaseauthdemo.ui
+package com.dilip.firebaseauthdemo.features.auth
 
 import android.app.Activity
 import android.widget.Toast
@@ -20,8 +20,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,15 +35,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.dilip.firebaseauthdemo.R
-import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
 import com.dilip.firebaseauthdemo.features.utils.CommonDialog
 import com.dilip.firebaseauthdemo.features.utils.ResultState
 import com.dilip.firebaseauthdemo.navigation.Route
@@ -58,20 +54,16 @@ fun NumberScreen(
     val context = LocalContext.current
     var phoneNumber by remember { mutableStateOf("") }
     var countryCode by remember { mutableStateOf("+91") }
-    val bgColor = Color(0xFFFFFFFF)
-    val tcolor = Color(0xFF2b472b)
-    var isDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    var isDialogVisible by remember { mutableStateOf(false) }
 
-    if (isDialog) {
-        CommonDialog()
-    }
+    val scope = rememberCoroutineScope()
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(bgColor)
-            .padding(horizontal = 16.dp),
+            .background(Color.White)
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -89,7 +81,7 @@ fun NumberScreen(
             text = "OTP Verification",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = tcolor
+            color = Color(0xFF2b472b)
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -99,6 +91,7 @@ fun NumberScreen(
             color = Color.Gray,
             fontSize = 16.sp
         )
+
         Text(
             text = "on this mobile number",
             color = Color.Gray,
@@ -136,23 +129,14 @@ fun NumberScreen(
                 onValueChange = {
                     if (it.length <= 10) phoneNumber = it
                 },
-                label = { Text(text = "Enter Mobile Number", color = tcolor) },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = bgColor,
-                    unfocusedContainerColor = bgColor,
-                    focusedIndicatorColor = tcolor,
-                    cursorColor = tcolor,
+                label = { Text(text = "Enter Mobile Number", color = Color(0xFF2b472b)) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
                 ),
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
-                ),
-                textStyle = TextStyle(
-                    color = tcolor
-                )
+                textStyle = TextStyle(color = Color(0xFF2b472b))
             )
         }
 
@@ -162,13 +146,13 @@ fun NumberScreen(
             shape = RoundedCornerShape(50),
             onClick = {
                 val fullNumber = "$countryCode$phoneNumber" // country code with phone number
-                isDialog = true
+                isDialogVisible = true
 
                 scope.launch {
                     viewModel.createUserWithPhone(fullNumber, context as Activity).collect {
                         when (it) {
                             is ResultState.Success -> {
-                                isDialog = false
+                                isDialogVisible = false
                                 val otp = it.data
                                 navController.navigate(
                                     Route.OtpScreen.withOtpAndPhone(
@@ -179,24 +163,28 @@ fun NumberScreen(
                             }
 
                             is ResultState.Failure -> {
-                                isDialog = false
+                                isDialogVisible = false
                                 Toast.makeText(context, "Failed to send OTP", Toast.LENGTH_SHORT)
                                     .show()
                             }
 
                             ResultState.Loading -> {
-                                isDialog = true
+                                isDialogVisible = true
                             }
                         }
                     }
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                if (phoneNumber.length == 10) tcolor else Color.Gray
+                if (phoneNumber.length == 10) Color(0xFF2b472b) else Color.Gray
             ),
-            enabled = phoneNumber.length == 10,
+            enabled = phoneNumber.length == 10
         ) {
             Text(text = "Generate OTP", color = Color.White)
         }
+    }
+
+    if (isDialogVisible) {
+        CommonDialog()
     }
 }

@@ -1,7 +1,7 @@
 package com.dilip.firebaseauthdemo.di
 
-import com.dilip.firebaseauthdemo.features.services.AuthService
-import com.dilip.firebaseauthdemo.features.services.AuthServiceImpl
+import com.dilip.firebaseauthdemo.services.auth.AuthService
+import com.dilip.firebaseauthdemo.services.auth.AuthServiceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ abstract class AuthServiceModule {
 
    @Binds
    abstract fun providesFirebaseAuthService(
-       repo: AuthServiceImpl
+       authService: AuthServiceImpl
    ): AuthService
 
 }

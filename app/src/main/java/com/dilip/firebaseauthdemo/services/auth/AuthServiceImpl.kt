@@ -1,15 +1,13 @@
-package com.dilip.firebaseauthdemo.features.services
+package com.dilip.firebaseauthdemo.services.auth
 
 import android.app.Activity
+import com.dilip.firebaseauthdemo.features.utils.DataStoreUtil
 import com.dilip.firebaseauthdemo.features.utils.ResultState
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -17,19 +15,19 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AuthServiceImpl @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val dataStoreUtil: DataStoreUtil
 ) : AuthService {
-    val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    override val currentUserId: String
-        get() = auth.currentUser?.uid.toString()
+    private lateinit var omVerificationCode: String
 
     override val isAuthenticated: Boolean
         get() = auth.currentUser != null && auth.currentUser?.isAnonymous == false
 
-    private lateinit var omVerificationCode: String
-
-    override fun createUserWithPhone(phone: String, activity: Activity): Flow<ResultState<String>> =
+    override suspend fun createUserWithPhone(
+        phone: String,
+        activity: Activity
+    ): Flow<ResultState<String>> =
         callbackFlow {
             trySend(ResultState.Loading)
 
@@ -52,7 +50,7 @@ class AuthServiceImpl @Inject constructor(
                 }
 
             val options = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber(phone) // Phone number with country code like +91xxxxxxxxxx
+                .setPhoneNumber(phone)
                 .setTimeout(60L, TimeUnit.SECONDS)
                 .setActivity(activity)
                 .setCallbacks(onVerificationCallback)
@@ -64,41 +62,49 @@ class AuthServiceImpl @Inject constructor(
             }
         }
 
-    override fun signWithCredential(otp: String): Flow<ResultState<String>> = callbackFlow {
-        trySend(ResultState.Loading)
+    override suspend fun signInWithCredential(otp: String): Flow<ResultState<String>> =
+        callbackFlow {
+            trySend(ResultState.Loading)
 
-        val code = omVerificationCode
+            val code = omVerificationCode
 
-        if (code.isNullOrEmpty()) {
-            trySend(ResultState.Failure(IllegalStateException("Verification code not initialized")))
-        } else {
-            val credential = PhoneAuthProvider.getCredential(code, otp)
-            auth.signInWithCredential(credential)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        trySend(ResultState.Success("OTP verified"))
-                    } else {
-                        trySend(ResultState.Failure(it.exception ?: Exception("Unknown error")))
+            if (code.isNullOrEmpty()) {
+                trySend(ResultState.Failure(IllegalStateException("Verification code not initialized")))
+
+            } else {
+                val credential = PhoneAuthProvider.getCredential(code, otp)
+                auth.signInWithCredential(credential)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            trySend(ResultState.Success("OTP verified"))
+                        } else {
+                            trySend(ResultState.Failure(it.exception ?: Exception("Unknown error")))
+                        }
                     }
-                }
-                .addOnFailureListener {
-                    trySend(ResultState.Failure(it))
-                }
-        }
+                    .addOnFailureListener {
+                        trySend(ResultState.Failure(it))
+                    }
+            }
 
-        awaitClose {
-            close()
+            awaitClose {
+                close()
+            }
         }
-    }
 
     override suspend fun signOut() {
-
         if (auth.currentUser?.isAnonymous == true) {
             auth.currentUser?.delete()
         }
 
         auth.signOut()
-
+        dataStoreUtil.setData("isLoggedIn", false) // logged out in DataStore
     }
 
+    override suspend fun onLoggedIn() {
+        dataStoreUtil.setData("isLoggedIn", true)
+    }
+
+    override suspend fun isLoggedIn(): Boolean {
+        return dataStoreUtil.getData("isLoggedIn") ?: false
+    }
 }

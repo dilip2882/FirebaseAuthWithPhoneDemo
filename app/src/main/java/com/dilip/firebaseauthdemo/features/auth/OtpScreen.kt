@@ -1,4 +1,4 @@
-package com.dilip.firebaseauthdemo.ui
+package com.dilip.firebaseauthdemo.features.auth
 
 import android.app.Activity
 import android.widget.Toast
@@ -37,10 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dilip.firebaseauthdemo.R
-import com.dilip.firebaseauthdemo.features.screens.AuthViewModel
 import com.dilip.firebaseauthdemo.features.utils.CommonDialog
 import com.dilip.firebaseauthdemo.features.utils.ResultState
 import com.dilip.firebaseauthdemo.navigation.Route
