@@ -1,4 +1,4 @@
-package com.dilip.firebaseauthdemo.features.repository
+package com.dilip.firebaseauthdemo.features.services
 
 import android.app.Activity
 import com.dilip.firebaseauthdemo.features.utils.ResultState
@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(
+class AuthServiceImpl @Inject constructor(
     private val authdb: FirebaseAuth
-) : AuthRepository {
+) : AuthService {
 
     private lateinit var omVerificationCode: String
 

@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NumberScreen(
     navController: NavController,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel
 ) {
     val context = LocalContext.current
     var phoneNumber by remember { mutableStateOf("") }

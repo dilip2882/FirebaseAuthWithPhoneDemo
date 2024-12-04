@@ -1,10 +1,11 @@
-package com.dilip.firebaseauthdemo.features.repository
+package com.dilip.firebaseauthdemo.features.services
 
 import android.app.Activity
 import com.dilip.firebaseauthdemo.features.utils.ResultState
 import kotlinx.coroutines.flow.Flow
 
-interface AuthRepository {
+interface AuthService {
+
     fun createUserWithPhone(
         phone: String,   // Full phone number with country code
         activity: Activity
